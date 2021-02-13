@@ -100,12 +100,17 @@ bool gcp_process_line(const char *gcodeline)
 		*tok = 0;	//cut line before checksum
 	}
 
-	bool xp = false, yp = false, zp = false, ep = false, fp = false, tp = false, sp = false, pp = false, rp = false;
-	double xv = 0, yv = 0, zv = 0, ev = 0, fv = 0, tv = 0, sv = 0, pv = 0, rv = 0;
-	bool xb = false, yb = false, zb = false, eb = false, fb = false, tb = false, sb = false, pb = false, rb = false;
+	bool xp = false, yp = false, zp = false;
+	double xv = 0, yv = 0, zv = 0, ev = 0, fv = 0, sv = 0, pv = 0, rv = 0;
+	bool xb = false, yb = false, zb = false, eb = false, fb = false, sb = false, pb = false, rb = false;
+  
+  // Unused
+  // bool ep = false, rp = false, fp = false, tp = false, sp = false, pp = false;
+  // double tv = 0;
+  // bool tb = false;
 
-	for (tok = line; tok; tok = strchr(tok, ' '))	//white spaces ???
-	{
+  //white spaces ???
+	for (tok = line; tok; tok = strchr(tok, ' '))	{
 		if (!tok || !*(++tok))
 			break;
 
@@ -126,32 +131,32 @@ bool gcp_process_line(const char *gcodeline)
 			zb = (ref != NULL);
 		}
 		if ('E' == *tok) {
-			ep = true;
+			//ep = true;
 			ev = strtod(tok + 1, &ref);
 			eb = (ref != NULL);
 		}
 		if ('F' == *tok) {
-			fp = true;
+			//fp = true;
 			fv = strtod(tok + 1, &ref);
 			fb = (ref != NULL);
 		}
 		if ('T' == *tok) {
-			tp = true;
-			tv = strtod(tok + 1, &ref);
-			tb = (ref != NULL);
+			//tp = true;
+			//tv = strtod(tok + 1, &ref);
+			//tb = (ref != NULL);
 		}
 		if ('S' == *tok) {
-			sp = true;
+			//sp = true;
 			sv = strtod(tok + 1, &ref);
 			sb = (ref != NULL);
 		}
 		if ('P' == *tok) {
-			pp = true;
+			//pp = true;
 			pv = strtod(tok + 1, &ref);
 			pb = (ref != NULL);
 		}
 		if ('R' == *tok) {
-			rp = true;
+			//rp = true;
 			rv = strtod(tok + 1, &ref);
 			rb = (ref != NULL);
 		}

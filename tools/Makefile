@@ -5,11 +5,11 @@ TARGETS=upinfo upshell upload
 
 all: $(TARGETS)
 
-upinfo: upinfo.c ../common/up3d.c ../common/up3dcomm.c ../common/up3ddata.c -lm -lusb-1.0
+upinfo: upinfo.c ../common/up3d.o ../common/up3dcomm.o ../common/up3ddata.o -lm -lusb-1.0
 
-upshell: upshell.c ../common/up3d.c ../common/up3dcomm.c ../common/up3ddata.c -lm -lusb-1.0 -lncurses
+upshell: upshell.c ../common/up3d.o ../common/up3dcomm.o ../common/up3ddata.o -lm -lusb-1.0 -lncurses
 
-upload: upload.c ../common/up3d.c ../common/up3dcomm.c ../common/up3ddata.c -lm -lusb-1.0
+upload: upload.c ../common/up3d.o ../common/up3dcomm.o ../common/up3ddata.o -lm -lusb-1.0
 
 clean:
 	$(RM) $(TARGETS) *.o

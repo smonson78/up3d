@@ -276,8 +276,19 @@ void umcwriter_move_direct(double X, double Y, double Z, double A, double F)
   double tZ = fabs(umcwriter_Z_height-Z-umcwriter_Z)/feedZ;
   //double tA = fabs(relA)/feedA;
 
-  double t=0;
-  if(tX>t) t=tX; if(tY>t) t=tY; if(tZ>t) t=tZ;
+  double t = 0;
+  if (tX > t) {
+    t = tX;
+  }
+  
+  if (tY > t) {
+    t = tY;
+  }
+
+  if (tZ > t) {
+    t=tZ;
+  }
+
   umcwriter_print_time += t;
 
   double topos[2];
