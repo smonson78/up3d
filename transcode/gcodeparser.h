@@ -22,9 +22,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void   gcp_reset();
-bool   gcp_process_line(const char* gcodeline);
-int    gcp_get_layer();
+void gcp_reset();
+bool gcp_process_line(const char *gcodeline);
+int gcp_get_layer();
 double gcp_get_height();
 
-#endif //gcodeparser_h
+#endif

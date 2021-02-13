@@ -127,8 +127,7 @@ static void update_state(bool redrawall)
 	mvhline(12, 0, ' ', cols);
 	attroff(A_UNDERLINE);
 
-	int h;
-	for (h = 1; h < 5; h++) {
+	for (int h = 1; h < 5; h++) {
 		move(14 + h - 1, 0);
 		printw_b("Heater %d: ActualTemp:", h);
 		printw(" %5.1f C ", UP3D_GetHeaterTemp(h));

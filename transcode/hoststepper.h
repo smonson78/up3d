@@ -38,31 +38,30 @@
 // planner buffer. Once "checked-out", the steps in the segments buffer cannot be modified by 
 // the planner, where the remaining planner block steps still can.
 typedef struct {
-  uint16_t p1;
-  uint16_t p2;
+	uint16_t p1;
+	uint16_t p2;
 
-  int16_t p3;
-  int16_t p4;
-  int16_t p5;
+	int16_t p3;
+	int16_t p4;
+	int16_t p5;
 
-  int16_t p6;
-  int16_t p7;
-  int16_t p8;
-  
+	int16_t p6;
+	int16_t p7;
+	int16_t p8;
+
 } segment_up3d_t;
 
-
 //MS-->
-bool st_get_next_segment_up3d(segment_up3d_t** ppseg);
+bool st_get_next_segment_up3d(segment_up3d_t ** ppseg);
 //<--
 
 // Reset the stepper subsystem variables       
 void st_reset();
-             
+
 // Reloads step segment buffer. Called continuously by realtime execution system.
 void st_prep_buffer();
 
 // Called by planner_recalculate() when the executing block is updated by the new plan.
 void st_update_plan_block_parameters();
 
-#endif //hoststepper_h
+#endif				//hoststepper_h

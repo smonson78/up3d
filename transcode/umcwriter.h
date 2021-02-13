@@ -22,21 +22,21 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-bool    umcwriter_init(const char* filename, const double heightZ, const char machine_type);
-void    umcwriter_finish();
+bool umcwriter_init(const char *filename, const double heightZ, const char machine_type);
+void umcwriter_finish();
 int32_t umcwriter_get_print_time();
-void    umcwriter_home(int32_t axes);
-void    umcwriter_virtual_home(double speedX, double speedY,double speedZ);
-void    umcwriter_move_direct(double X, double Y, double Z, double A, double F);
-void    umcwriter_planner_set_position(double X, double Y, double A);
-void    umcwriter_planner_set_a_position(double A);
-void    umcwriter_planner_add(double X, double Y, double A, double F);
-void    umcwriter_planner_sync();
-void    umcwriter_set_extruder_temp(double temp, bool wait);
-void    umcwriter_set_bed_temp(int32_t temp, bool wait);
-void    umcwriter_set_report_data(int32_t layer, double height);
-void    umcwriter_pause(uint32_t msec);
-void    umcwriter_beep(uint32_t msec);
-void    umcwriter_user_pause();
+void umcwriter_home(int32_t axes);
+void umcwriter_virtual_home(double speedX, double speedY, double speedZ);
+void umcwriter_move_direct(double X, double Y, double Z, double A, double F);
+void umcwriter_planner_set_position(double X, double Y, double A);
+void umcwriter_planner_set_a_position(double A);
+void umcwriter_planner_add(double X, double Y, double A, double F);
+void umcwriter_planner_sync();
+void umcwriter_set_extruder_temp(double temp, bool wait);
+void umcwriter_set_bed_temp(int32_t temp, bool wait);
+void umcwriter_set_report_data(int32_t layer, double height);
+void umcwriter_pause(uint32_t msec);
+void umcwriter_beep(uint32_t msec);
+void umcwriter_user_pause();
 
-#endif //umcwriter_h
+#endif				//umcwriter_h
