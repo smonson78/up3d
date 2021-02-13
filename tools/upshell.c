@@ -233,32 +233,31 @@ static void update_state(bool redrawall)
 
 	int r = 29;
 	move(r++, 0);
-	int g;
-	for (g = 0x3d; g < 0x100; g++) {
+	for (int g = 0x3d; g < 0x100; g++) {
 		if (0 == g % 12)
 			move(r++, 0);
 		printw_b("%02X:", g);
 		printw("%08x ", UP3D_GetParameter(g));
 	}
 
-/*
+	/*
   move(r++,0);  
   for(g=0x50;g<0x54;g++)
   {
     uint32_t f = UP3D_GetParameter(g);
     printw_b("%02X:",g);printw("%f ", *((float*)&f) );
   }
-*/
+	*/
 
 	move(r++, 0);
-	for (g = 0x84; g < 0x8A; g++) {
+	for (int g = 0x84; g < 0x8A; g++) {
 		uint32_t f = UP3D_GetParameter(g);
 		printw_b("%02X:", g);
 		printw("%f ", *((float *)&f));
 	}
 
 	move(r++, 0);
-	for (g = 0x97; g < 0x9F; g++) {
+	for (int g = 0x97; g < 0x9F; g++) {
 		uint32_t f = UP3D_GetParameter(g);
 		printw_b("%02X:", g);
 		printw("%f ", *((float *)&f));
@@ -286,8 +285,9 @@ static void sigfinish(int sig)
 
 int main(int argc, char *argv[])
 {
-	if (!UP3D_Open())
+	if (!UP3D_Open()) {
 		return -1;
+	}
 
 	signal(SIGINT, sigfinish);	// set sigint handler
 #ifdef SIGWINCH
@@ -317,11 +317,12 @@ int main(int argc, char *argv[])
 
 		bkgd(COLOR_PAIR(1));
 	}
+
 	//initial draw
 	update_state(true);
 
 	//the loop
-	for (;;) {
+	while (1) {
 		int c = getch();
 
 		switch (c) {
