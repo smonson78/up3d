@@ -81,6 +81,13 @@ bool gcp_process_line(const char *gcodeline)
 		line = tok + 1;
 	}
 
+	if ((tok = strchr(line, ';'))) {
+		if (tok == line)
+			return true;	//complete line is a comment
+
+		*tok = 0;	//cut line before first comment
+	}
+
 	if ((tok = strchr(line, '*'))) {
 		double checksum = strtod(tok + 1, NULL);
 		uint8_t csx = 0;
@@ -91,13 +98,6 @@ bool gcp_process_line(const char *gcodeline)
 			return false;
 		}
 		*tok = 0;	//cut line before checksum
-	}
-
-	if ((tok = strchr(line, ';'))) {
-		if (tok == line)
-			return true;	//complete line is a comment
-
-		*tok = 0;	//cut line before first comment
 	}
 
 	bool xp = false, yp = false, zp = false, ep = false, fp = false, tp = false, sp = false, pp = false, rp = false;
