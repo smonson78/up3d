@@ -30,82 +30,86 @@
 
 void print_usage_and_exit()
 {
-  printf("Usage: up3dtranscode machinetype input.gcode output.umc nozzleheight\n\n");
-  printf("          machinetype:  mini / classic / plus / box / cetus\n");
-  printf("          input.gcode:  g-code file from slic3r/cura/simplify\n");
-  printf("          output.umc:   up machine code file which will be generated\n");
-  printf("          nozzleheight: nozzle distance from bed (e.g. 123.45)\n\n");
-  exit(0);
+	printf("Usage: up3dtranscode machinetype input.gcode output.umc nozzleheight\n\n");
+	printf("          machinetype:  mini / classic / plus / box / cetus\n");
+	printf("          input.gcode:  g-code file from slic3r/cura/simplify\n");
+	printf("          output.umc:   up machine code file which will be generated\n");
+	printf("          nozzleheight: nozzle distance from bed (e.g. 123.45)\n\n");
+	exit(0);
 }
 
 int main(int argc, char *argv[])
 {
-  if( 5 != argc )
-    print_usage_and_exit();
+	if (5 != argc)
+		print_usage_and_exit();
 
-  switch( argv[1][0] )
-  {
-    case 'm': //mini
-      memcpy( &settings, &settings_mini, sizeof(settings) );
-      break;
+	switch (argv[1][0]) {
+	  case 'm':		//mini
+		  memcpy(&settings, &settings_mini, sizeof(settings));
+		  break;
 
-    case 'c': //classic
-      if( 'e' == argv[1][1] ) // cetus
-      {
-        memcpy( &settings, &settings_cetus, sizeof(settings) );
-        break;
-      }
-      //fall through
-    case 'p': //plus
-      memcpy( &settings, &settings_classic_plus, sizeof(settings) );
-      break;
-  
-    case 'b': //box
-      memcpy( &settings, &settings_box, sizeof(settings) );
-      break;
+	  case 'c':		//classic
+		  if ('e' == argv[1][1])	// cetus
+		  {
+			  memcpy(&settings, &settings_cetus, sizeof(settings));
+			  break;
+		  }
+		  //fall through
+	  case 'p':		//plus
+		  memcpy(&settings, &settings_classic_plus, sizeof(settings));
+		  break;
 
-    default:
-      printf("ERROR: Uknown machine type: %s\n\n",argv[1] );
-      print_usage_and_exit();
+	  case 'b':		//box
+		  memcpy(&settings, &settings_box, sizeof(settings));
+		  break;
+
+	  default:
+		  printf("ERROR: Uknown machine type: %s\n\n", argv[1]);
+		  print_usage_and_exit();
+	}
+
+	double nozzle_height;
+	if (1 != sscanf(argv[4], "%lf", &nozzle_height)) {
+		printf("ERROR: Invalid nozzle height: %s\n\n", argv[4]);
+		print_usage_and_exit();
+	}
+
+	FILE *fgcode = fopen(argv[2], "r");
+	if (!fgcode) {
+		printf("ERROR: Could not open %s for reading\n\n", argv[2]);
+		print_usage_and_exit();
+	}
+
+	if (!umcwriter_init(argv[3], nozzle_height, argv[1][0])) {
+		printf("ERROR: Could not open %s for writing\n\n", argv[3]);
+		print_usage_and_exit();
+	}
+
+	gcp_reset();
+
+	char line[1024];
+	while (fgets(line, sizeof(line), fgcode)) {
+		if (!gcp_process_line(line)) {
+			return 0;
+    }
   }
 
-  double nozzle_height;
-  if( 1 != sscanf(argv[4],"%lf", &nozzle_height) )
-  {
-    printf("ERROR: Invalid nozzle height: %s\n\n", argv[4]);
-    print_usage_and_exit();
-  }
+	umcwriter_finish();
+	int32_t print_time = umcwriter_get_print_time();
 
-  FILE* fgcode = fopen( argv[2], "r" );
-  if( !fgcode )
-  {
-    printf("ERROR: Could not open %s for reading\n\n", argv[2]);
-    print_usage_and_exit();
-  }
+	fclose(fgcode);
 
-  if( !umcwriter_init( argv[3], nozzle_height, argv[1][0] ) )
-  {
-    printf("ERROR: Could not open %s for writing\n\n", argv[3]);
-    print_usage_and_exit();
-  }
+	printf("Height: %5.2fmm / Layer: %3d / Time: ", gcp_get_height(), gcp_get_layer());
+	int h = print_time / 3600;
+	if (h) {
+		printf("%dh:", h);
+		print_time -= h * 3600;
+	}
+	int m = print_time / 60;
+	printf("%02dm:", m);
+	print_time -= m * 60;
+	printf("%02ds", print_time);
+	printf(" / Nozzle Height: %.2fmm\n", nozzle_height);
 
-  gcp_reset();
-
-  char line[1024];
-  while( fgets(line,sizeof(line),fgcode) )
-    if( !gcp_process_line(line) )
-      return 0;
-
-  umcwriter_finish();
-  int32_t print_time = umcwriter_get_print_time();
-
-  fclose( fgcode );
-
-  printf("Height: %5.2fmm / Layer: %3d / Time: ", gcp_get_height(), gcp_get_layer() );
-  int h = print_time/3600; if(h){printf("%dh:",h); print_time -= h*3600;}
-  int m = print_time/60; printf("%02dm:",m); print_time -= m*60;
-  printf("%02ds",print_time);
-  printf(" / Nozzle Height: %.2fmm\n", nozzle_height);
-
-  return 0;
+	return 0;
 }

@@ -243,7 +243,7 @@ void _dat_cmd_MoveL( int16_t p1, int16_t p2, int16_t p3, int16_t p4, int16_t p5,
 
   int32_t v13 = (int32_t)p1*((int32_t)p1 - 1);
 
-  //s = (t^2 * a) / 2        (s travaled during acceleration / decelleration)
+  //s = (t^2 * a) / 2        (s travelled during acceleration / deceleration)
   //  = (p1^2 * p6) / 2
   //  = ((v13 * p6) / 2) ---------------------------------vvvvvvvvvvvvvvvvvvvvv   vvv----vvvvvvvvvvvvvv---- compensate rounding errors
 
@@ -253,7 +253,7 @@ void _dat_cmd_MoveL( int16_t p1, int16_t p2, int16_t p3, int16_t p4, int16_t p5,
 
 
   //s = p3 * p1 ----^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  //s = v * t        (s travaled during linear speed)
+  //s = v * t        (s travelled during linear speed)
 
   //512 = divider/factor to compress/expand to/from fixed point
 
