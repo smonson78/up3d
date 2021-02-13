@@ -76,8 +76,10 @@ bool gcp_process_line(const char *gcodeline)
 		gcp_line_number = lineno;
 
 		tok = strchr(line, ' ');	//jump over line number
-		if (!tok)
+		if (!tok) {
 			return true;	//empty line
+    }
+    
 		line = tok + 1;
 	}
 
@@ -91,8 +93,10 @@ bool gcp_process_line(const char *gcodeline)
 	if ((tok = strchr(line, '*'))) {
 		double checksum = strtod(tok + 1, NULL);
 		uint8_t csx = 0;
-		for (tok--; tok != line; tok--)
+		for (tok--; tok != line; tok--) {
 			csx ^= *tok;
+    }
+
 		if (csx != checksum) {
 			gcp_error("Invalid checksum", gcodeline);
 			return false;
