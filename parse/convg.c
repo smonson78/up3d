@@ -72,14 +72,18 @@ typedef struct UPBLOCK {
 } UPBLOCK;
 #pragma pack()
 
-static double _posX, _posY, _posZ, _posE;
-static int _lastFeed = -1;
-static bool _Xchange, _Ychange, _Zchange, _Echange;
-static int _minFeed;
-static int _maxFeed;
+double _posX, _posY, _posZ, _posE;
+
+int _lastFeed = -1;
+bool _Xchange, _Ychange, _Zchange, _Echange;
+int _minFeed;
+int _maxFeed;
 
 void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isXY)
 {
+
+	printf("; MoveF (%f, %f, %f, %f, %s)\n", speed1, pos1, speed2, pos2, isXY ? "XY" : "ZE");
+
 	if (isXY) {
 		_Xchange = false;
 		_Ychange = false;
@@ -88,7 +92,8 @@ void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isX
 		_minFeed = 1000000;
 		_maxFeed = 0;
 
-		if (speed1 != 0) {
+		// X component
+		if (speed1 != 0 && pos1 != 0.0) {
 			_posX = pos1;
 			if (_minFeed > fabs(speed1))
 				_minFeed = fabs(speed1);
@@ -96,7 +101,9 @@ void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isX
 				_maxFeed = fabs(speed1);
 			_Xchange = true;
 		}
-		if (speed2 != 0) {
+
+		// Y component
+		if (speed2 != 0 && pos2 != 0.0) {
 			_posY = pos2;
 			if (_minFeed > fabs(speed2))
 				_minFeed = fabs(speed2);
@@ -105,7 +112,9 @@ void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isX
 			_Ychange = true;
 		}
 	} else {
-		if (speed1 != 0) {
+
+		// Z component
+		if (speed1 != 0 && pos1 != 0.0) {
 			_posZ = pos1;
 			if (_minFeed > fabs(speed1))
 				_minFeed = fabs(speed1);
@@ -113,7 +122,9 @@ void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isX
 				_maxFeed = fabs(speed1);
 			_Zchange = true;
 		}
-		if (speed2 != 0) {
+
+		// Extrusion component
+		if (speed2 != 0 && pos2 != 0.0) {
 			if (speed2 < 0)
 				_posE = pos2;
 			else
@@ -125,47 +136,84 @@ void _dat_cmd_MoveF(float speed1, float pos1, float speed2, float pos2, bool isX
 				_maxFeed = fabs(speed2);
 			_Echange = true;
 		}
+	}
 
-		if (_Xchange || _Ychange || _Zchange || _Echange) {
-			printf("G1");
-			if (_Xchange)
-				printf(" X%.4f", _posY);
-			if (_Ychange)
-				printf(" Y%.4f", -_posX);
-			if (_Zchange)
-				printf(" Z%.4f", ADD_Z + _posZ);
-			if (_Echange)
-				printf(" E%.5f", _posE);
+	if (_Xchange || _Ychange || _Zchange || _Echange) {
+		printf("G1");
+		if (_Xchange)
+			printf(" X%.4f", _posY);
+		if (_Ychange)
+			printf(" Y%.4f", -_posX);
+		if (_Zchange)
+			printf(" Z%.4f", ADD_Z + _posZ);
+		if (_Echange)
+			printf(" E%.5f", _posE);
 /*
-      if( _lastFeed != _minFeed )
-      {
-        printf(" F%d", _minFeed);
-        _lastFeed = _minFeed;
-      }
+		// Speed up if possible
+		if( _lastFeed != _minFeed )
+		{
+			printf(" F%d", _minFeed);
+			_lastFeed = _minFeed;
+		}
 */
-			if (_lastFeed != _maxFeed) {
-				printf(" F%d", _maxFeed);
-				_lastFeed = _maxFeed;
-			}
-			printf("\n");
+		// Slow down if necessary
+		if (_lastFeed != _maxFeed) {
+			printf(" F%d", _maxFeed);
+			_lastFeed = _maxFeed;
+		}
+		printf("\n");
+
+		printf("\n; ==> move ");
+		if (isXY) {
+			printf("to X%.4f, Y%.4f", pos1, pos2);
+		} else {
+			printf("to Z%.4f, E%.4f", pos1, pos2);
+		}
+		
+		printf("\n\n");
 
 //      if( _Echange ) printf("G92 E0\n");
-		}
+	} else {
+		printf("; ==> no movement\n");
 	}
+
 }
 
 void _dat_cmd_MoveL(uint16_t p1, uint16_t p2, int16_t p3, int16_t p4, int16_t p5, int16_t p6, int16_t p7, int16_t p8)
 {
-	int32_t sx = floor((float)((p3 * p1 + p6 * (p1 - 1) * p1 / 2)) / 512);
+	// Relative movement in X,Y,E axes
+
+	// Could have used a comment here ffs
+	int32_t sx = floor(
+		(float)(
+			// wtf
+			(p3 * p1 + p6 * (p1 - 1) * p1 / 2)
+		) 
+		/ 512
+	);
+	// This is a combination of:
+	// p1 * p3                            - timer events * steps per timer event
+	// (p1 - 1) * (p1 / 2) * p6           - 
+
+
 	int32_t sy = floor((float)((p4 * p1 + p7 * (p1 - 1) * p1 / 2)) / 512);
 	int32_t sa = floor((float)((p5 * p1 + p8 * (p1 - 1) * p1 / 2)) / 512);
+
+	// sx uses p1, p3, and p6
 	double r1 = sx / STEPS_X;
+	// sy uses p1, p4 and p7
 	double r2 = sy / STEPS_Y;
+	// sa uses p1, p5 and p8
 	double r3 = sa / STEPS_E;
+	// p2 appears to be a time constant only, no effect on distances
+	// we lose accuracy in these divisions, although bear in mind this is just convg and not the real thing
 
 	_posX += r1;
 	_posY += r2;
 	_posE += r3;
+
+	printf("; MoveL (%d, %d, %d, %d, %d, %d, %d, %d)\n",
+		p1, p2, p3, p4, p5, p6, p7, p8);
 
 	if ((r1 != 0) || (r2 != 0) || (r3 != 0)) {
 		printf("G1");
@@ -308,6 +356,12 @@ int main(int argc, char *argv[])
 
 		if (sizeof(UPBLOCK) != fread(&block, 1, sizeof(UPBLOCK), fdat))
 			break;
+
+		printf("; ");
+		for (int i = 0; i < sizeof(UPBLOCK); i++) {
+			printf("%02x", ((uint8_t *)&block)[i]);
+		}
+		printf("\n");
 
 		_parse_dat_block(&block);
 	}

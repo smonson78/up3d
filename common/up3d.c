@@ -45,9 +45,17 @@ bool UP3D_ClearProgramBuf()
 	static const uint8_t UP3D_CMD_43[] = { 0x43 };
 	uint8_t resp[2048];
 
-	if ((UP3DCOMM_Write(UP3D_CMD_43, sizeof(UP3D_CMD_43)) != sizeof(UP3D_CMD_43)) ||
-	    (1 != UP3DCOMM_Read(resp, sizeof(resp))) || (6 != resp[0]))
+	if (UP3DCOMM_Write(UP3D_CMD_43, sizeof(UP3D_CMD_43)) != sizeof(UP3D_CMD_43)) {
 		return false;
+	}
+
+	if (UP3DCOMM_Read(resp, sizeof(resp)) != 1) {
+		return false;
+	}
+
+	if (resp[0] != 6) {
+		return false;
+	}
 
 	return true;
 }

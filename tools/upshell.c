@@ -318,10 +318,10 @@ int main(int argc, char *argv[])
 		bkgd(COLOR_PAIR(1));
 	}
 
-	//initial draw
+	// Initial draw
 	update_state(true);
 
-	//the loop
+	// Main loop
 	while (1) {
 		int c = getch();
 
@@ -330,6 +330,7 @@ int main(int argc, char *argv[])
 			  update_state(true);
 			  break;	// CTRL-R
 
+			// 'P' key seems like it might stop the printer
 		  case 'p':
 			  {
 				  UP3D_BLK blk;
@@ -342,8 +343,10 @@ int main(int argc, char *argv[])
 				  UP3D_SetParameter(0x94, 999);	//set best accuracy for reporting position
 			  }
 			  break;
+
+			// 'Q' key to quit
 		  case 'q':
-			  {
+				{
 				  UP3D_BLK blk;
 				  UP3D_ClearProgramBuf();
 				  UP3D_PROG_BLK_Power(&blk, false);
@@ -352,9 +355,10 @@ int main(int argc, char *argv[])
 				  UP3D_WriteBlock(&blk);
 				  UP3D_StartResumeProgram();
 				  sigfinish(0);
-			  }
+				}
 			  break;
 
+			// '0' key does something to the "ROM" settings
 		  case '0':
 			  {
 				  UP3D_ClearProgramBuf();

@@ -47,6 +47,7 @@ bool UP3DCOMM_Open()
 
 	libusb_set_debug(_libusb_ctx, 0);	//set verbosity level to 0
 
+	// Try each of the possible USB product identifiers in turn
 	_libusb_dev_handle = libusb_open_device_with_vid_pid(_libusb_ctx, VID, PID_MINI_A);
 	if (!_libusb_dev_handle) {
 		_libusb_dev_handle = libusb_open_device_with_vid_pid(_libusb_ctx, VID, PID_MINI_M);
@@ -64,7 +65,7 @@ bool UP3DCOMM_Open()
 		return false;
 	}
 
-	if (1 == libusb_kernel_driver_active(_libusb_dev_handle, 0)) {
+	if (libusb_kernel_driver_active(_libusb_dev_handle, 0) == 1) {
 		libusb_detach_kernel_driver(_libusb_dev_handle, 0);
 	}
 
@@ -74,7 +75,7 @@ bool UP3DCOMM_Open()
 		return false;
 	}
 
-	//clean all outstanding printer responses (left from previous sessions)
+	// Clean all outstanding printer responses (left from previous sessions)
 	while (1) {
 		int read;
 		uint8_t buf[2048];
@@ -128,8 +129,9 @@ int UP3DCOMM_Write(const uint8_t *data, const size_t datalen)
 #endif
 
 	int written;
-	if (libusb_bulk_transfer(_libusb_dev_handle, (EP_OUT | LIBUSB_ENDPOINT_OUT), (uint8_t *)data, datalen, &written, 500))
+	if (libusb_bulk_transfer(_libusb_dev_handle, (EP_OUT | LIBUSB_ENDPOINT_OUT), (uint8_t *)data, datalen, &written, 500)) {
 		return -1;
+	}
 
 	return written;
 }
