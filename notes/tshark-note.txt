@@ -1,0 +1,2 @@
+tshark -r ~/Desktop/upplus2.pcap -T fields -e usb.src -e frame.number -e usb.capdata >print-capture.txt
+
